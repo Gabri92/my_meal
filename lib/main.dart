@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../utils.dart';
+import '../homepage.dart';
 
+import '../globals.dart' as globals;
 import 'Authentication/Login.dart';
 import 'Authentication/Signup.dart';
 
@@ -47,64 +49,6 @@ class MyApp extends StatelessWidget {
       );
 }
 
-//HOMEPAGE
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!; //Recupera credenziali user
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              const Text(
-                'Signed In as',
-              ),
-              const SizedBox(height: 4),
-              Text(
-                user.email!,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 40),
-              const Text('Welcome back'),
-              //const SizedBox(height: 4),
-              const Text(
-                //TODO: Risolvere
-                //user.displayName!,
-                'da risolvere',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red),
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50)),
-                icon: const Icon(Icons.arrow_back, size: 32),
-                label: const Text(
-                  'Sign out',
-                  style: TextStyle(fontSize: 24),
-                ),
-                onPressed: () => FirebaseAuth.instance.signOut(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // AUTH PAGE
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -122,4 +66,41 @@ class _AuthPageState extends State<AuthPage> {
       : SignUpWidget(onClickedSignIn: toggle);
 
   void toggle() => setState(() => isLogin = !isLogin);
+}
+
+// //App bar
+class BottomAppNavBar extends StatelessWidget {
+  const BottomAppNavBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      height: 60,
+      shape: const CircularNotchedRectangle(),
+      color: Colors.blue,
+      child: IconTheme(
+        data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+              onPressed: () {},
+              tooltip: 'Home',
+              icon: const Icon(Icons.home_filled),
+              iconSize: 32,
+              padding: const EdgeInsets.all(16),
+            ),
+            IconButton(
+              onPressed: () {},
+              tooltip: 'Profile',
+              icon: const Icon(Icons.manage_accounts),
+              iconSize: 32,
+              padding: const EdgeInsets.all(16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

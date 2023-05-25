@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../Authentication/reset_psw.dart';
 
 import '../Utils.dart';

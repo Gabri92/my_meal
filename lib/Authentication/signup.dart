@@ -4,8 +4,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 
+import '../globals.dart' as globals;
 import '../Utils.dart';
 import '../main.dart';
+import '../globals.dart';
 
 // SIGNUP WIDGET
 class SignUpWidget extends StatefulWidget {
@@ -71,7 +73,22 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         'username': authUser.displayName,
       };
 
-      FirebaseFirestore.instance.collection("Users").add(user);
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .add(user)
+          .then((DocumentReference doc) => globals.userDoc = doc);
+
+      final storage = <String, dynamic>{
+        'Name': 'La dispensa di ${authUser.displayName}',
+      };
+
+      await FirebaseFirestore.instance
+          .collection("Storages")
+          .add(storage)
+          .then((DocumentReference doc) => globals.storageDoc = doc);
+
+      await FirebaseFirestore.instance.collection("Users").doc(userDoc?.id).set(
+          ({'storageID': globals.storageDoc?.id}), SetOptions(merge: true));
     } on Exception catch (error) {
       print(error.toString());
 
