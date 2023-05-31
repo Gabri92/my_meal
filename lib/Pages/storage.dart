@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../globals.dart' as globals;
-import '../main.dart';
-import '../utils.dart';
+import '../../globals.dart' as globals;
+import '../../main.dart';
+import '../../utils.dart';
 
 class StoragePage extends StatefulWidget {
   const StoragePage({super.key});
@@ -18,7 +19,7 @@ class StoragePage extends StatefulWidget {
 class _StoragePageState extends State<StoragePage> {
   final Stream<QuerySnapshot> _storageRef = FirebaseFirestore.instance
       .collection("Storages")
-      .doc('goUrDkyiqb62WpzgOWP3') //TODO: Generalizzare
+      .doc(globals.userCredential?.storageID) //TODO: Generalizzare
       .collection("Dispensa")
       .snapshots();
 
@@ -40,7 +41,7 @@ class _StoragePageState extends State<StoragePage> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ModifyProductPage(),
+            builder: (context) => ModifyProductPage(document: document),
           ),
         );
       },
@@ -136,6 +137,14 @@ class _NewProductPageState extends State<NewProductPage> {
   void initState() {
     dateInputController.text = "";
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    productController.dispose();
+    dateInputController.dispose();
+
+    super.dispose();
   }
 
   void sendProductToDb() {
@@ -244,11 +253,29 @@ class _NewProductPageState extends State<NewProductPage> {
 }
 
 class ModifyProductPage extends StatefulWidget {
+  final QueryDocumentSnapshot document;
+
+  const ModifyProductPage({super.key, required this.document});
+
+  Map<String, dynamic> getData() {
+    Map<String, dynamic> productDetails = {
+      "name": document["Nome"],
+      "expire": document["Scadenza"],
+    };
+
+    return productDetails;
+  }
+
   @override
   State<ModifyProductPage> createState() => _ModifyProductPageState();
 }
 
 class _ModifyProductPageState extends State<ModifyProductPage> {
+  @override
+  // void initState() {
+  //   Map<String, dynamic> product = super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,47 +286,12 @@ class _ModifyProductPageState extends State<ModifyProductPage> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
+      body: Center(
+        child: Column(
+            // children: [Text()],
+            ),
+      ),
       bottomNavigationBar: const BottomAppNavBar(),
     );
   }
 }
-
-// class Product {
-//   String? name;
-//   String? category;
-//   Timestamp? expireDate;
-
-//   Product({
-//     this.name,
-//     this.category,
-//     this.expireDate,
-//   });
-
-//   factory Product.fromFirestore(
-//     DocumentSnapshot<Map<String, dynamic>> snapshot,
-//     SnapshotOptions options,
-//   ) {
-//     final data = snapshot.data();
-//     return Product(
-//       name: data?['Nome'],
-//       category: data?['Categoria'],
-//       expireDate: data?['Scadenza'],
-//     );
-//   }
-
-//   Map<String, dynamic> toFirestore() {
-//     return {
-//       if (name != null) "Nome": name,
-//       if (category != null) "Categoria": category,
-//       if (expireDate != null) "Scadenza": expireDate,
-//     };
-//   }
-
-//   bool isNull(var value) {
-//     if (value != null) {
-//       return false;
-//     } else {
-//       return true;
-//     }
-//   }
-// }

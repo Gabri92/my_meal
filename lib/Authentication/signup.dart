@@ -7,7 +7,6 @@ import 'package:email_validator/email_validator.dart';
 import '../globals.dart' as globals;
 import '../Utils.dart';
 import '../main.dart';
-import '../globals.dart';
 
 // SIGNUP WIDGET
 class SignUpWidget extends StatefulWidget {
@@ -40,7 +39,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     super.dispose();
   }
 
-  Future signUp() async {
+  Future<void> signUp() async {
     final isValid = formKey.currentState!.validate();
     if (!isValid) return;
 
@@ -50,6 +49,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
+    // Crea nuovo utente in Firebase
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
@@ -61,6 +61,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       Utils.showSnackBar(error.message);
     }
 
+    // Aggiunge nome ad utente firebase
     try {
       await FirebaseAuth.instance.currentUser!
           .updateDisplayName(userNameController.text.trim());
@@ -73,23 +74,30 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         'username': authUser.displayName,
       };
 
+      // Crea nuovo utente in Firestore
+      DocumentReference? userDoc;
       await FirebaseFirestore.instance
           .collection("Users")
           .add(user)
-          .then((DocumentReference doc) => globals.userDoc = doc);
+          .then((DocumentReference doc) => userDoc = doc);
 
       final storage = <String, dynamic>{
         'Name': 'La dispensa di ${authUser.displayName}',
       };
 
+      // Crea nuovo magazzino in Firestore
+      DocumentReference? storageDoc;
       await FirebaseFirestore.instance
           .collection("Storages")
           .add(storage)
-          .then((DocumentReference doc) => globals.storageDoc = doc);
+          .then((DocumentReference doc) => storageDoc = doc);
 
-      await FirebaseFirestore.instance.collection("Users").doc(userDoc?.id).set(
-          ({'storageID': globals.storageDoc?.id}), SetOptions(merge: true));
-    } on Exception catch (error) {
+      // Assegna id magazzino all'utente
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(userDoc?.id)
+          .set(({'storageID': storageDoc?.id}), SetOptions(merge: true));
+    } catch (error) {
       print(error.toString());
 
       Utils.showSnackBar(error.toString());

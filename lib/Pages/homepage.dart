@@ -1,13 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../globals.dart' as global;
-import '../main.dart';
-import '../storage.dart';
+import '../../globals.dart' as globals;
+import '../../main.dart';
+import 'storage.dart';
 
 //HOMEPAGE
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Future<void> userCredentials;
+
+  const HomePage({super.key, required this.userCredentials});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -16,8 +19,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!; //Recupera credenziali user
-
     return Scaffold(
       body: Center(
         child: Column(

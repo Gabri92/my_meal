@@ -5,6 +5,8 @@ import 'package:email_validator/email_validator.dart';
 import '../Authentication/reset_psw.dart';
 
 import '../Utils.dart';
+import '../main.dart';
+import '../globals.dart' as global;
 
 // LOGIN WIDGET
 class LoginWidget extends StatefulWidget {
@@ -49,8 +51,8 @@ class _LoginWidgetState extends State<LoginWidget> {
 
     // Navigator.of(context) not working!
     //Vedere navigator key
-    if (context.mounted) Navigator.of(context).pop();
-    //navigatorKey.currentState!.popUntil((route) => route);
+    //if (context.mounted) Navigator.of(context).pop();
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
 
   @override
