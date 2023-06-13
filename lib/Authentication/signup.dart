@@ -4,7 +4,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 
-import '../globals.dart' as globals;
 import '../Utils.dart';
 import '../main.dart';
 
@@ -58,7 +57,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     } on FirebaseAuthException catch (error) {
       print(error);
 
-      Utils.showSnackBar(error.message);
+      Utils.showSnackBar(error.message, Colors.red);
     }
 
     // Aggiunge nome ad utente firebase
@@ -100,7 +99,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     } catch (error) {
       print(error.toString());
 
-      Utils.showSnackBar(error.toString());
+      Utils.showSnackBar(error.toString(), Colors.red);
     }
 
     // Navigator.of(context) not working!

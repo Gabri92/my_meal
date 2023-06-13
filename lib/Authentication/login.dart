@@ -6,7 +6,6 @@ import '../Authentication/reset_psw.dart';
 
 import '../Utils.dart';
 import '../main.dart';
-import '../globals.dart' as global;
 
 // LOGIN WIDGET
 class LoginWidget extends StatefulWidget {
@@ -46,7 +45,7 @@ class _LoginWidgetState extends State<LoginWidget> {
         password: passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      Utils.showSnackBar(e.message);
+      Utils.showSnackBar(e.message, Colors.red);
     }
 
     // Navigator.of(context) not working!
