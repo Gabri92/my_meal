@@ -115,28 +115,39 @@ class _StoragePageState extends State<StoragePage> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 120,
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  TextField(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _storageRef,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text('Loading...');
+          }
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            return Center(
+                child: Column(
+              children: [
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 120,
+                  child: TextField(
                     onChanged: (value) {
                       filterSearchResults(value);
                     },
                     controller: editingController,
                     decoration: const InputDecoration(
-                        labelText: 'Search',
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                        )),
+                      labelText: 'Search',
+                      hintText: 'Search',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                      ),
+                    ),
                   ),
-                  Row(
+                ),
+                Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton.icon(
@@ -168,88 +179,68 @@ class _StoragePageState extends State<StoragePage> {
                         ),
                       ),
                       ElevatedButton.icon(
-                        style: TextButton.styleFrom(backgroundColor: btnColor),
-                        icon: const Icon(Icons.abc),
-                        label: const Text('Scadenza'),
-                        onPressed: () => setState(
-                          () {
-                            if (order == Order.byDefault ||
-                                order == Order.byName) {
-                              _storageRef = FirebaseFirestore.instance
+                          style:
+                              TextButton.styleFrom(backgroundColor: btnColor),
+                          icon: const Icon(Icons.abc),
+                          label: const Text('Scadenza'),
+                          onPressed: () => setState(() {
+                                if (order == Order.byDefault ||
+                                    order == Order.byName) {
+                                  _storageRef = FirebaseFirestore.instance
+                                      .collection("Storages")
+                                      .doc(globals.userCredential
+                                          ?.storageID) //TODO: Generalizzare
+                                      .collection("Dispensa")
+                                      .orderBy("Scadenza")
+                                      .snapshots();
+                                  order = Order.byDate;
+                                } else {
+                                  _storageRef = FirebaseFirestore.instance
+                                      .collection("Storages")
+                                      .doc(globals.userCredential
+                                          ?.storageID) //TODO: Generalizzare
+                                      .collection("Dispensa")
+                                      .snapshots();
+                                  order = Order.byDefault;
+                                }
+                              }))
+                    ]),
+                SizedBox(
+                  height: 500, //TODO: Se ho un altro schermo?
+                  child: ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      itemExtent: 50.0,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        return Dismissible(
+                            key: UniqueKey(),
+                            onDismissed: (direction) {
+                              FirebaseFirestore.instance
                                   .collection("Storages")
-                                  .doc(globals.userCredential
-                                      ?.storageID) //TODO: Generalizzare
+                                  .doc(globals.userCredential?.storageID)
                                   .collection("Dispensa")
-                                  .orderBy("Scadenza")
-                                  .snapshots();
-                              order = Order.byDate;
-                            } else {
-                              _storageRef = FirebaseFirestore.instance
-                                  .collection("Storages")
-                                  .doc(globals.userCredential
-                                      ?.storageID) //TODO: Generalizzare
-                                  .collection("Dispensa")
-                                  .snapshots();
-                              order = Order.byDefault;
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            StreamBuilder<QuerySnapshot>(
-              stream: _storageRef,
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return const Text('Something went wrong');
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text('Loading...');
-                }
-                if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                  return SizedBox(
-                    height: 500, //TODO: Se ho un altro schermo?
-                    child: ListView.builder(
-                        padding: const EdgeInsets.all(10),
-                        itemExtent: 50.0,
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          return Dismissible(
-                              key: UniqueKey(),
-                              onDismissed: (direction) {
-                                FirebaseFirestore.instance
-                                    .collection("Storages")
-                                    .doc(globals.userCredential?.storageID)
-                                    .collection("Dispensa")
-                                    .doc(snapshot.data!.docs[index].id)
-                                    .delete();
-                                setState(() {
-                                  snapshot.data!.docs.removeAt(index);
-                                });
-                                Utils.showSnackBar(
-                                    'Item removed from list', Colors.green);
-                              },
-                              background: Container(color: Colors.red),
-                              child: _buildListItem(
-                                  context, snapshot.data!.docs[index]));
-                        }),
-                  );
-                } else {
-                  return const Text(
-                    'Niente',
-                    textAlign: TextAlign.center,
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+                                  .doc(snapshot.data!.docs[index].id)
+                                  .delete();
+                              setState(() {
+                                snapshot.data!.docs.removeAt(index);
+                              });
+                              Utils.showSnackBar(
+                                  'Item removed from list', Colors.green);
+                            },
+                            background: Container(color: Colors.red),
+                            child: _buildListItem(
+                                context, snapshot.data!.docs[index]));
+                      }),
+                ),
+              ],
+            ));
+          } else {
+            return const Text(
+              'Niente',
+              textAlign: TextAlign.center,
+            );
+          }
+        },
       ),
       // bottomNavigationBar: const MainScreen(),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
