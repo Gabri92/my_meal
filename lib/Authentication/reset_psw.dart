@@ -1,8 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:my_meal/Authentication/login.dart';
+import 'package:my_meal/utils.dart';
 
-import '../utils.dart';
+import '../Utils.dart' as utils;
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -33,7 +36,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: emailController.text.trim());
 
-      Utils.showSnackBar('An email has been sent', Colors.red);
+      utils.Utils.showSnackBar('An email has been sent', Colors.red);
 
       if (context.mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
@@ -49,11 +52,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          elevation: 0,
-          title: const Text('Reset Password'),
-        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Form(
@@ -61,12 +59,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Receive an email to\nreset your password',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24),
-                ),
                 const SizedBox(height: 20),
+                const Text('Reset Password',
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 80),
+                const Text('Inserisci la tua email ed imposta la tua password',
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.w300)),
+                const SizedBox(height: 40),
                 TextFormField(
                   controller: emailController,
                   textInputAction: TextInputAction.done,
@@ -76,18 +79,43 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           ? 'Enter a valid email'
                           : null,
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                  ),
-                  onPressed: resetPsw,
-                  icon: const Icon(Icons.email_outlined, size: 32),
-                  label: const Text(
-                    'Reset Password',
-                    style: TextStyle(fontSize: 24),
+                const SizedBox(height: 100),
+                SizedBox(
+                  height: 60,
+                  width: 300,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      backgroundColor: const Color(utils.primaryColor),
+                    ),
+                    onPressed: resetPsw,
+                    child: const Text(
+                      'Reset Password',
+                      style: TextStyle(fontSize: 24),
+                    ),
                   ),
                 ),
+                const SizedBox(height: 30),
+                RichText(
+                    text: TextSpan(
+                  children: [
+                    TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          if (context.mounted) {
+                            Navigator.of(context)
+                                .popUntil((route) => route.isFirst);
+                          }
+                        },
+                      text: 'Torna al Login',
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 20),
+                    ),
+                  ],
+                )),
               ],
             ),
           ),

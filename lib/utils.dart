@@ -13,3 +13,5 @@ class Utils {
       ..showSnackBar(snackBar);
   }
 }
+
+const primaryColor = 0xFF22C7B0;

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import '../Authentication/reset_psw.dart';
 
-import '../Utils.dart';
+import '../utils.dart' as utils;
 import '../main.dart';
 
 // LOGIN WIDGET
@@ -45,7 +45,7 @@ class _LoginWidgetState extends State<LoginWidget> {
         password: passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      Utils.showSnackBar(e.message, Colors.red);
+      utils.Utils.showSnackBar(e.message, Colors.red);
     }
 
     // Navigator.of(context) not working!
@@ -60,49 +60,84 @@ class _LoginWidgetState extends State<LoginWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 40),
-            const FlutterLogo(size: 120),
-            const SizedBox(height: 20),
-            const Text('Hey There, \n Welcome Back',
+            const SizedBox(height: 80),
+            const Text('Che bello rivederti!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.w300)),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 40),
-            TextFormField(
-              controller: emailController,
-              textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(labelText: 'Email'),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (email) =>
-                  email != null && !EmailValidator.validate(email)
-                      ? 'Enter a valid email'
-                      : null,
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-                controller: passwordController,
-                textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
+            const Text('Iniziamo a gestire la tua dispensa',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300)),
+            const SizedBox(height: 80),
+            SizedBox(
+              height: 50,
+              width: 325,
+              child: TextFormField(
+                controller: emailController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                    fillColor: Color.fromARGB(225, 177, 219, 213),
+                    filled: true,
+                    labelText: 'La tua email',
+                    labelStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(50)))),
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) => value != null && value.length < 6
-                    ? 'Enter min. 6 characters'
-                    : null),
-            const SizedBox(height: 50),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.lock_open, size: 32),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
+                validator: (email) =>
+                    email != null && !EmailValidator.validate(email)
+                        ? 'Inserisci una email valida'
+                        : null,
               ),
-              label: const Text(
-                'Sign in',
-                style: TextStyle(fontSize: 24),
-              ),
-              onPressed: signIn,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 30),
+            SizedBox(
+              height: 50,
+              width: 325,
+              child: TextFormField(
+                  controller: passwordController,
+                  textInputAction: TextInputAction.done,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'La tua password',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  obscureText: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => value != null && value.length < 6
+                      ? 'Inserisci almeno 6 caratteri'
+                      : null),
+            ),
+            const SizedBox(height: 80),
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
+                ),
+                onPressed: signIn,
+                child: const Text(
+                  'Accedi',
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+            ),
+            const SizedBox(height: 50),
             GestureDetector(
               child: Text(
-                'Forgot password?',
+                'Hai dimenticato la password?',
                 style: TextStyle(
                   decoration: TextDecoration.underline,
                   color: Theme.of(context).colorScheme.primary,
@@ -119,12 +154,12 @@ class _LoginWidgetState extends State<LoginWidget> {
             RichText(
               text: TextSpan(
                 style: const TextStyle(color: Colors.black, fontSize: 20),
-                text: 'No account? ',
+                text: 'Non sei registrato? ',
                 children: [
                   TextSpan(
                     recognizer: TapGestureRecognizer()
                       ..onTap = widget.onClickedSignup,
-                    text: 'Sign Up',
+                    text: 'Clicca qui',
                     style: TextStyle(
                       decoration: TextDecoration.underline,
                       color: Theme.of(context).colorScheme.primary,

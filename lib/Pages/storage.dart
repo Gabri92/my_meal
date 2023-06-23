@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../globals.dart' as globals;
-import '../../utils.dart';
+import '../../Utils.dart' as utils;
 
 class StoragePage extends StatefulWidget {
   static const String route = '/home/storage';
@@ -76,11 +76,13 @@ class _StoragePageState extends State<StoragePage> {
       },
       title: Container(
         padding: const EdgeInsets.all(10.0),
-        decoration: const BoxDecoration(
-          color: Colors.blue,
+        decoration: BoxDecoration(
+          // color: Color(utils.primaryColor),
+          border: Border.all(color: Colors.grey),
+          borderRadius: const BorderRadius.all(Radius.circular(25)),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             if (badState) ...[
               const Text(
@@ -89,11 +91,11 @@ class _StoragePageState extends State<StoragePage> {
             ] else ...[
               Text(
                 document['Nome'],
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
                 DateFormat.yMd().format(expireDate),
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ]
           ],
@@ -109,6 +111,7 @@ class _StoragePageState extends State<StoragePage> {
     // TEST OFFLINE
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(utils.primaryColor),
         centerTitle: true,
         title: const Text(
           title,
@@ -129,81 +132,108 @@ class _StoragePageState extends State<StoragePage> {
             return Center(
                 child: Column(
               children: [
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 120,
-                  child: TextField(
-                    onChanged: (value) {
-                      filterSearchResults(value);
-                    },
-                    controller: editingController,
-                    decoration: const InputDecoration(
-                      labelText: 'Search',
-                      hintText: 'Search',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 2,
+                      color: const Color(utils.primaryColor),
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(28)),
+                  ),
+                  child: SizedBox(
+                    height: 50,
+                    width: 350,
+                    child: TextField(
+                      onChanged: (value) {
+                        filterSearchResults(value);
+                      },
+                      controller: editingController,
+                      decoration: const InputDecoration(
+                        labelText: 'Search',
+                        hintText: 'Search',
+                        prefixIcon: Icon(Icons.search,
+                            color: Color(utils.primaryColor)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                        ),
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton.icon(
-                        style: TextButton.styleFrom(backgroundColor: btnColor),
-                        icon: const Icon(Icons.abc),
-                        label: const Text('Nome'),
-                        onPressed: () => setState(
-                          () {
-                            if (order == Order.byDefault ||
-                                order == Order.byDate) {
-                              _storageRef = FirebaseFirestore.instance
-                                  .collection("Storages")
-                                  .doc(globals.userCredential
-                                      ?.storageID) //TODO: Generalizzare
-                                  .collection("Dispensa")
-                                  .orderBy("Nome")
-                                  .snapshots();
-                              order = Order.byName;
-                            } else {
-                              _storageRef = FirebaseFirestore.instance
-                                  .collection("Storages")
-                                  .doc(globals.userCredential
-                                      ?.storageID) //TODO: Generalizzare
-                                  .collection("Dispensa")
-                                  .snapshots();
-                              order = Order.byDefault;
-                            }
-                          },
+                      SizedBox(
+                        width: 140,
+                        child: ElevatedButton.icon(
+                          style: TextButton.styleFrom(
+                            backgroundColor: const Color(utils.primaryColor),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50))),
+                          ),
+                          icon: const Icon(Icons.abc),
+                          label: const Text('Nome'),
+                          onPressed: () => setState(
+                            () {
+                              if (order == Order.byDefault ||
+                                  order == Order.byDate) {
+                                _storageRef = FirebaseFirestore.instance
+                                    .collection("Storages")
+                                    .doc(globals.userCredential
+                                        ?.storageID) //TODO: Generalizzare
+                                    .collection("Dispensa")
+                                    .orderBy("Nome")
+                                    .snapshots();
+                                order = Order.byName;
+                              } else {
+                                _storageRef = FirebaseFirestore.instance
+                                    .collection("Storages")
+                                    .doc(globals.userCredential
+                                        ?.storageID) //TODO: Generalizzare
+                                    .collection("Dispensa")
+                                    .snapshots();
+                                order = Order.byDefault;
+                              }
+                            },
+                          ),
                         ),
                       ),
-                      ElevatedButton.icon(
-                          style:
-                              TextButton.styleFrom(backgroundColor: btnColor),
-                          icon: const Icon(Icons.abc),
-                          label: const Text('Scadenza'),
-                          onPressed: () => setState(() {
-                                if (order == Order.byDefault ||
-                                    order == Order.byName) {
-                                  _storageRef = FirebaseFirestore.instance
-                                      .collection("Storages")
-                                      .doc(globals.userCredential
-                                          ?.storageID) //TODO: Generalizzare
-                                      .collection("Dispensa")
-                                      .orderBy("Scadenza")
-                                      .snapshots();
-                                  order = Order.byDate;
-                                } else {
-                                  _storageRef = FirebaseFirestore.instance
-                                      .collection("Storages")
-                                      .doc(globals.userCredential
-                                          ?.storageID) //TODO: Generalizzare
-                                      .collection("Dispensa")
-                                      .snapshots();
-                                  order = Order.byDefault;
-                                }
-                              }))
+                      SizedBox(
+                        width: 140,
+                        child: ElevatedButton.icon(
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(utils.primaryColor),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50))),
+                            ),
+                            icon: const Icon(Icons.abc),
+                            label: const Text('Scadenza'),
+                            onPressed: () => setState(() {
+                                  if (order == Order.byDefault ||
+                                      order == Order.byName) {
+                                    _storageRef = FirebaseFirestore.instance
+                                        .collection("Storages")
+                                        .doc(globals.userCredential
+                                            ?.storageID) //TODO: Generalizzare
+                                        .collection("Dispensa")
+                                        .orderBy("Scadenza")
+                                        .snapshots();
+                                    order = Order.byDate;
+                                  } else {
+                                    _storageRef = FirebaseFirestore.instance
+                                        .collection("Storages")
+                                        .doc(globals.userCredential
+                                            ?.storageID) //TODO: Generalizzare
+                                        .collection("Dispensa")
+                                        .snapshots();
+                                    order = Order.byDefault;
+                                  }
+                                })),
+                      )
                     ]),
                 SizedBox(
                   height: 500, //TODO: Se ho un altro schermo?
@@ -224,7 +254,7 @@ class _StoragePageState extends State<StoragePage> {
                               setState(() {
                                 snapshot.data!.docs.removeAt(index);
                               });
-                              Utils.showSnackBar(
+                              utils.Utils.showSnackBar(
                                   'Item removed from list', Colors.green);
                             },
                             background: Container(color: Colors.red),
@@ -246,6 +276,7 @@ class _StoragePageState extends State<StoragePage> {
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(utils.primaryColor),
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(
@@ -291,14 +322,15 @@ class _NewProductPageState extends State<NewProductPage> {
         .collection("Dispensa");
 
     if (productController.text == "" || dateInputController.text == "") {
-      Utils.showSnackBar("Mancano dei dati", Colors.red);
+      utils.Utils.showSnackBar("Mancano dei dati", Colors.red);
       return;
     }
 
     dbRef.where("Nome", isEqualTo: productController.text).count().get().then(
       (res) {
         if (res.count != 0) {
-          Utils.showSnackBar("Prodotto già presente in dispensa", Colors.red);
+          utils.Utils.showSnackBar(
+              "Prodotto già presente in dispensa", Colors.red);
           return;
         } else {
           final data = <String, dynamic>{
@@ -315,7 +347,7 @@ class _NewProductPageState extends State<NewProductPage> {
         }
       },
       onError: (e) =>
-          Utils.showSnackBar("Si è verificato un errore: $e", Colors.red),
+          utils.Utils.showSnackBar("Si è verificato un errore: $e", Colors.red),
     );
 
     // Utils.showSnackBar('Prodotto già esistente in dispensa');
@@ -418,7 +450,7 @@ class _ModifyProductPageState extends State<ModifyProductPage> {
         .collection("Dispensa");
 
     if (productController.text == "" || dateInputController.text == "") {
-      Utils.showSnackBar("Mancano dei dati", Colors.red);
+      utils.Utils.showSnackBar("Mancano dei dati", Colors.red);
       return;
     }
 
@@ -433,7 +465,8 @@ class _ModifyProductPageState extends State<ModifyProductPage> {
         .then(
       (res) {
         if (res.count != 0) {
-          Utils.showSnackBar("Prodotto già presente in dispensa", Colors.red);
+          utils.Utils.showSnackBar(
+              "Prodotto già presente in dispensa", Colors.red);
           return;
         } else {
           final data = <String, dynamic>{
@@ -443,12 +476,13 @@ class _ModifyProductPageState extends State<ModifyProductPage> {
             ),
           };
           dbRef.doc(widget.document.id).update(data).then((value) {
-            Utils.showSnackBar("Modifiche salvate con successo!", Colors.green);
+            utils.Utils.showSnackBar(
+                "Modifiche salvate con successo!", Colors.green);
           }, onError: (e) => print("Errore: $e"));
         }
       },
       onError: (e) =>
-          Utils.showSnackBar("Si è verificato un errore: $e", Colors.red),
+          utils.Utils.showSnackBar("Si è verificato un errore: $e", Colors.red),
     );
 
     // Utils.showSnackBar('Prodotto già esistente in dispensa');

@@ -19,7 +19,7 @@ class UserCredentials {
   ) {
     final data = snapshot.data();
     return UserCredentials(
-      email: data?["Nome"],
+      email: data?["email"],
       storageID: data?["storageID"],
       uid: data?["uid"],
       username: data?["username"],
@@ -28,7 +28,7 @@ class UserCredentials {
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (email != null) "Nome": email,
+      if (email != null) "email": email,
       if (storageID != null) "storageID": storageID,
       if (uid != null) "uid": uid,
       if (username != null) "username": username,
