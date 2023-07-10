@@ -251,11 +251,6 @@ class _StoragePageState extends State<StoragePage> {
                                   .collection("Dispensa")
                                   .doc(snapshot.data!.docs[index].id)
                                   .delete();
-                              setState(() {
-                                snapshot.data!.docs.removeAt(index);
-                              });
-                              utils.Utils.showSnackBar(
-                                  'Item removed from list', Colors.green);
                             },
                             background: Container(color: Colors.red),
                             child: _buildListItem(
@@ -265,9 +260,25 @@ class _StoragePageState extends State<StoragePage> {
               ],
             ));
           } else {
-            return const Text(
-              'Niente',
-              textAlign: TextAlign.center,
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    Image.asset('assets/images/dispensa.png',
+                        width: 300, height: 300),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Inizia inserendo il tuo primo prodotto nella Dispensa Digitale.'
+                      ' Inquadra l’ alimento con la fotocamera del telefono o inserisci i dati manualmente.',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
         },
@@ -358,64 +369,102 @@ class _NewProductPageState extends State<NewProductPage> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           centerTitle: true,
+          backgroundColor: const Color(utils.primaryColor),
           title: const Text(
             'Inserimento prodotto',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        body: Form(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              const FlutterLogo(size: 120),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: productController,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                    labelText: 'Inserisci il prodotto...'),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) =>
-                    value == null ? 'Inserire un prodotto' : null,
-              ),
-              TextFormField(
-                controller: dateInputController,
-                textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(
-                    labelText: 'Inserisci la data di scadenza...'),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) =>
-                    value == null ? 'Inserire la data di scadenza' : null,
-                readOnly: true,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2100));
+        body: Center(
+          child: Form(
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Image.asset('assets/images/dispensa.png',
+                    width: 300, height: 300),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 50,
+                  width: 325,
+                  child: TextFormField(
+                    controller: productController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                        fillColor: Color.fromARGB(225, 177, 219, 213),
+                        filled: true,
+                        labelText: 'Inserisci il prodotto...',
+                        labelStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50)))),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) =>
+                        value == null ? 'Inserire un prodotto' : null,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  height: 50,
+                  width: 325,
+                  child: TextFormField(
+                    controller: dateInputController,
+                    textInputAction: TextInputAction.done,
+                    decoration: const InputDecoration(
+                        fillColor: Color.fromARGB(225, 177, 219, 213),
+                        filled: true,
+                        labelText: 'Inserisci la data di scadenza...',
+                        labelStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50)))),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) =>
+                        value == null ? 'Inserire la data di scadenza' : null,
+                    readOnly: true,
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100));
 
-                  if (pickedDate != null) {
-                    setState(() {
-                      dateInputController.text = pickedDate.toString();
-                      // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.plus_one_outlined, size: 32),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
+                      if (pickedDate != null) {
+                        setState(() {
+                          dateInputController.text = pickedDate.toString();
+                          // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
+                        });
+                      }
+                    },
+                  ),
                 ),
-                label: const Text(
-                  'Inserisci',
-                  style: TextStyle(fontSize: 24),
+                const SizedBox(height: 60),
+                SizedBox(
+                  height: 60,
+                  width: 300,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      backgroundColor: const Color(utils.primaryColor),
+                    ),
+                    onPressed: sendProductToDb,
+                    child: const Text(
+                      'Inserisci prodotto',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
                 ),
-                onPressed: sendProductToDb,
-              ),
-              const SizedBox(height: 30),
-            ],
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       );
@@ -517,59 +566,99 @@ class _ModifyProductPageState extends State<ModifyProductPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: const Color(utils.primaryColor),
         title: const Text(
           'Modifica il tuo prodotto',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Form(
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            const FlutterLogo(size: 120),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: productController,
-              textInputAction: TextInputAction.next,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) =>
-                  value == null ? 'Inserire un prodotto' : null,
-            ),
-            TextFormField(
-              controller: dateInputController,
-              textInputAction: TextInputAction.done,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) =>
-                  value == null ? 'Inserire la data di scadenza' : null,
-              readOnly: true,
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2100));
+      body: Center(
+        child: Form(
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              Image.asset('assets/images/dispensa.png',
+                  width: 300, height: 300),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 50,
+                width: 325,
+                child: TextFormField(
+                  controller: productController,
+                  textInputAction: TextInputAction.next,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'Inserisci il prodotto...',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  validator: (value) =>
+                      value == null ? 'Inserire un prodotto' : null,
+                ),
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                height: 50,
+                width: 325,
+                child: TextFormField(
+                  controller: dateInputController,
+                  textInputAction: TextInputAction.done,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'Inserisci il prodotto...',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  validator: (value) =>
+                      value == null ? 'Inserire la data di scadenza' : null,
+                  readOnly: true,
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100));
 
-                if (pickedDate != null) {
-                  setState(() {
-                    dateInputController.text = pickedDate.toString();
-                    // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.plus_one_outlined, size: 32),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
+                    if (pickedDate != null) {
+                      setState(() {
+                        dateInputController.text = pickedDate.toString();
+                        // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
+                      });
+                    }
+                  },
+                ),
               ),
-              label: const Text(
-                'Salva le modifiche',
-                style: TextStyle(fontSize: 24),
+              const SizedBox(height: 60),
+              SizedBox(
+                height: 60,
+                width: 300,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  onPressed: sendProductToDb,
+                  child: const Text(
+                    'Salva le modifiche',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
               ),
-              onPressed: sendProductToDb,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Stream<QuerySnapshot> _storageRef = FirebaseFirestore.instance
+  final _storageRef = FirebaseFirestore.instance
       .collection("Storages")
       .doc(globals.userCredential?.storageID) //TODO: Generalizzare
       .collection("Dispensa")
@@ -34,9 +35,8 @@ class _HomePageState extends State<HomePage> {
       )
       .snapshots();
 
-  final Stream<QuerySnapshot> _invitationRef = FirebaseFirestore.instance
-      .collection('Invitations')
-      .snapshots(); //globals.userCredential?.email)
+  final Stream<QuerySnapshot> _invitationRef =
+      FirebaseFirestore.instance.collection('Invitations').snapshots();
 
   Widget _buildListItem(BuildContext context, QueryDocumentSnapshot document) {
     bool badState = false;
@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.black),
                 children: [
                   TextSpan(
-                    text: doc['Subject'].toString(),
+                    text: doc['Invited by'].toString(),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                         foregroundColor: Colors.greenAccent,
                         backgroundColor: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: acceptInvitation,
                       child: const Text(
                         'Accetta',
                         style: TextStyle(
@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                         foregroundColor: Colors.red,
                         backgroundColor: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: refuseInvitation,
                       child: const Text(
                         'Rifiuta',
                         style: TextStyle(
@@ -165,6 +165,65 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Future acceptInvitation() async {
+    var docRef = await FirebaseFirestore.instance
+        .collection("Invitations")
+        .where('Subject', isEqualTo: globals.userCredential?.email)
+        .get();
+
+    String whoInvitedMe = docRef.docs.first['Invited by'];
+
+    var userRef = await FirebaseFirestore.instance
+        .collection("Users")
+        .where("email", isEqualTo: whoInvitedMe)
+        .get();
+
+    globals.userCredential?.storageID = userRef.docs.first["storageID"];
+
+    String? oldStorageID;
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .where("email", isEqualTo: globals.userCredential?.email)
+        .get()
+        .then(
+      (value) {
+        FirebaseFirestore.instance
+            .collection("Users")
+            .doc(value.docs.first.id)
+            .set({'storageID': globals.userCredential?.storageID},
+                SetOptions(merge: true));
+      },
+      onError: (error) {
+        print(error);
+        utils.Utils.showSnackBar('Utente non trovato', Colors.red);
+      },
+    );
+
+    // FirebaseFirestore.instance
+    //     .collection("Storages")
+    //     .doc(oldStorageID)
+    //     .delete();
+
+    FirebaseFirestore.instance
+        .collection("Invitations")
+        .doc(docRef.docs.first.id)
+        .delete();
+  }
+
+  Future refuseInvitation() async {
+    final docRef = await FirebaseFirestore.instance
+        .collection("Invitations")
+        .where('Subject', isEqualTo: globals.userCredential?.email)
+        .get();
+
+    FirebaseFirestore.instance
+        .collection("Invitations")
+        .doc(docRef.docs.first.id)
+        .delete();
+
+    utils.Utils.showSnackBar('Invito rifiutato', Colors.red);
   }
 
   @override
@@ -234,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text('Loading...');
                       }
-                      if (snapshot.hasData) {
+                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                         return SizedBox(
                           height: 150,
                           child: ListView.builder(
@@ -248,9 +307,21 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       } else {
-                        return const Text(
-                          'Niente',
-                          textAlign: TextAlign.center,
+                        return Center(
+                          child: SizedBox(
+                            height: 150,
+                            child: Column(
+                              children: const [
+                                SizedBox(height: 50),
+                                Text(
+                                  'Nessun alimento in scadenza\n all\'interno della dispensa',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w200),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       }
                     },

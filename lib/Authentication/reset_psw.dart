@@ -108,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 .popUntil((route) => route.isFirst);
                           }
                         },
-                      text: 'Torna al Login',
+                      text: 'Torna indietro',
                       style: TextStyle(
                           decoration: TextDecoration.underline,
                           color: Theme.of(context).colorScheme.primary,

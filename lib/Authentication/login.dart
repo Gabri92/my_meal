@@ -3,8 +3,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import '../Authentication/reset_psw.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../utils.dart' as utils;
+import '../globals.dart' as globals;
 import '../main.dart';
 
 // LOGIN WIDGET
@@ -38,6 +40,15 @@ class _LoginWidgetState extends State<LoginWidget> {
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
+
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .where("email", isEqualTo: emailController.text)
+        .get()
+        .then((value) => globals.userCredential =
+            globals.UserCredentials.fromFirestore(value.docs.first))
+        .onError((error, stackTrace) => utils.Utils.showSnackBar(
+            "Errore nel caricamento del profilo utente", Colors.red));
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
