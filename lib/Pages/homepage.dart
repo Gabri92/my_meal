@@ -230,175 +230,179 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          children: <Widget>[
-            const Padding(padding: EdgeInsets.all(30)),
-            Column(
-              children: [
-                StreamBuilder<QuerySnapshot>(
-                    stream: _invitationRef,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasData) {
-                        var docs = snapshot.data!.docs.where((element) =>
-                            element['Subject'] ==
-                            globals.userCredential?.email);
-                        if (docs.isNotEmpty) {
-                          return _invitationDialog(context, docs.first);
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              const Padding(padding: EdgeInsets.all(30)),
+              Column(
+                children: [
+                  StreamBuilder<QuerySnapshot>(
+                      stream: _invitationRef,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasData) {
+                          var docs = snapshot.data!.docs.where((element) =>
+                              element['Subject'] ==
+                              globals.userCredential?.email);
+                          if (docs.isNotEmpty) {
+                            return _invitationDialog(context, docs.first);
+                          } else {
+                            return Container(
+                              height: 0,
+                            );
+                          }
                         } else {
-                          return Container(
-                            height: 0,
+                          return Container(height: 0);
+                        }
+                      }),
+                  const SizedBox(height: 25),
+                  Container(
+                    width: 350,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: const Color.fromARGB(255, 120, 30, 0),
+                            width: 1.0),
+                        color: const Color.fromARGB(255, 120, 30, 0),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20.0))),
+                    child: const SizedBox(
+                        child: Text(
+                      "Alimenti in scadenza",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                          color: Colors.white),
+                    )),
+                  ),
+                  const SizedBox(height: 5),
+                  Container(
+                    width: 350,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey, width: 1.0),
+                        color: Colors.white,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20.0))),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _storageRef,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return const Text('Something went wrong');
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Text('Loading...');
+                        }
+                        if (snapshot.hasData &&
+                            snapshot.data!.docs.isNotEmpty) {
+                          return SizedBox(
+                            height: 150,
+                            child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(10),
+                              itemExtent: 40.0,
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) => _buildListItem(
+                                  context, snapshot.data!.docs[index]),
+                            ),
+                          );
+                        } else {
+                          return Center(
+                            child: SizedBox(
+                              height: 150,
+                              child: Column(
+                                children: const [
+                                  SizedBox(height: 50),
+                                  Text(
+                                    'Nessun alimento in scadenza\n all\'interno della dispensa',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w200),
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
                         }
-                      } else {
-                        return Container(height: 0);
-                      }
-                    }),
-                const SizedBox(height: 25),
-                Container(
-                  width: 350,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: const Color.fromARGB(255, 120, 30, 0),
-                          width: 1.0),
-                      color: const Color.fromARGB(255, 120, 30, 0),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(20.0))),
-                  child: const SizedBox(
-                      child: Text(
-                    "Alimenti in scadenza",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 32,
-                        color: Colors.white),
-                  )),
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  width: 350,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey, width: 1.0),
-                      color: Colors.white,
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(20.0))),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: _storageRef,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return const Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Text('Loading...');
-                      }
-                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                        return SizedBox(
-                          height: 150,
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.all(10),
-                            itemExtent: 40.0,
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) => _buildListItem(
-                                context, snapshot.data!.docs[index]),
-                          ),
-                        );
-                      } else {
-                        return Center(
-                          child: SizedBox(
-                            height: 150,
-                            child: Column(
-                              children: const [
-                                SizedBox(height: 50),
-                                Text(
-                                  'Nessun alimento in scadenza\n all\'interno della dispensa',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w200),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 70),
-            SizedBox(
-              height: 60,
-              width: 350,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
-                  backgroundColor: const Color(utils.primaryColor),
-                ),
-                child: const Text(
-                  'Vai all\' intera dispensa',
-                  style: TextStyle(fontSize: 24),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const StoragePage(),
-                    ),
-                  );
-                },
+                ],
               ),
-            ),
-            const SizedBox(height: 30),
-            SizedBox(
-              height: 60,
-              width: 350,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
-                  backgroundColor: const Color(utils.primaryColor),
+              const SizedBox(height: 70),
+              SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  child: const Text(
+                    'Vai all\' intera dispensa',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const StoragePage(),
+                      ),
+                    );
+                  },
                 ),
-                child: const Text(
-                  'Inserisci nuovi prodotti',
-                  style: TextStyle(fontSize: 24),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const NewProductPage(),
-                    ),
-                  );
-                },
               ),
-            ),
-            const SizedBox(height: 30),
-            SizedBox(
-              height: 60,
-              width: 350,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
-                  backgroundColor: const Color(utils.primaryColor),
+              const SizedBox(height: 30),
+              SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  child: const Text(
+                    'Inserisci nuovi prodotti',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const NewProductPage(),
+                      ),
+                    );
+                  },
                 ),
-                child: const Text(
-                  'Condividi la dispensa',
-                  style: TextStyle(fontSize: 24),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ShareStoragePage(),
-                    ),
-                  );
-                },
               ),
-            ),
-          ],
+              const SizedBox(height: 30),
+              SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  child: const Text(
+                    'Condividi la dispensa',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ShareStoragePage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -62,65 +62,70 @@ class _ShareStoragePageState extends State<ShareStoragePage> {
       body: Center(
         child: Form(
           key: formKey,
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              Image.asset('assets/images/shared.png', width: 300, height: 300),
-              const SizedBox(height: 20),
-              const Text('Condividi la tua dispensa!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: const Text(
-                    'Aggiungi l\'email della persona che vuoi aggiungere per invitarlo ad unirsi alla tua dispensa',
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Image.asset('assets/images/shared.png',
+                    width: 300, height: 300),
+                const SizedBox(height: 20),
+                const Text('Condividi la tua dispensa!',
                     textAlign: TextAlign.center,
                     style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w300)),
-              ),
-              const SizedBox(height: 20), //80
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                      fillColor: Color.fromARGB(225, 177, 219, 213),
-                      filled: true,
-                      labelText: 'Inserisci un\'email',
-                      labelStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
-                  controller: emailController,
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (email) =>
-                      email != null && !EmailValidator.validate(email)
-                          ? 'Inserisci una email valida'
-                          : null,
-                ),
-              ),
-              const SizedBox(height: 35),
-              SizedBox(
-                height: 50,
-                width: 200,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    backgroundColor: const Color(utils.primaryColor),
-                  ),
-                  onPressed: setInvitation,
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                Container(
+                  padding: const EdgeInsets.all(16),
                   child: const Text(
-                    'Invia invito',
-                    style: TextStyle(fontSize: 24),
+                      'Aggiungi l\'email della persona che vuoi aggiungere per invitarlo ad unirsi alla tua dispensa',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w300)),
+                ),
+                const SizedBox(height: 20), //80
+                SizedBox(
+                  height: 50,
+                  width: 325,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        fillColor: Color.fromARGB(225, 177, 219, 213),
+                        filled: true,
+                        labelText: 'Inserisci un\'email',
+                        labelStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50)))),
+                    controller: emailController,
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (email) =>
+                        email != null && !EmailValidator.validate(email)
+                            ? 'Inserisci una email valida'
+                            : null,
                   ),
                 ),
-              )
-            ],
+                const SizedBox(height: 35),
+                SizedBox(
+                  height: 50,
+                  width: 200,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      backgroundColor: const Color(utils.primaryColor),
+                    ),
+                    onPressed: setInvitation,
+                    child: const Text(
+                      'Invia invito',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
