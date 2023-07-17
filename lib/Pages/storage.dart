@@ -130,80 +130,46 @@ class _StoragePageState extends State<StoragePage> {
           }
           if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
             return Center(
-                child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2,
-                      color: const Color(utils.primaryColor),
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(28)),
-                  ),
-                  child: SizedBox(
-                    height: 50,
-                    width: 350,
-                    child: TextField(
-                      onChanged: (value) {
-                        filterSearchResults(value);
-                      },
-                      controller: editingController,
-                      decoration: const InputDecoration(
-                        labelText: 'Search',
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search,
-                            color: Color(utils.primaryColor)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                        ),
+                child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 2,
+                        color: const Color(utils.primaryColor),
                       ),
+                      borderRadius: const BorderRadius.all(Radius.circular(28)),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                        width: 140,
-                        child: ElevatedButton.icon(
-                          style: TextButton.styleFrom(
-                            backgroundColor: const Color(utils.primaryColor),
-                            shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50))),
-                          ),
-                          icon: const Icon(Icons.abc),
-                          label: const Text('Nome'),
-                          onPressed: () => setState(
-                            () {
-                              if (order == Order.byDefault ||
-                                  order == Order.byDate) {
-                                _storageRef = FirebaseFirestore.instance
-                                    .collection("Storages")
-                                    .doc(globals.userCredential
-                                        ?.storageID) //TODO: Generalizzare
-                                    .collection("Dispensa")
-                                    .orderBy("Nome")
-                                    .snapshots();
-                                order = Order.byName;
-                              } else {
-                                _storageRef = FirebaseFirestore.instance
-                                    .collection("Storages")
-                                    .doc(globals.userCredential
-                                        ?.storageID) //TODO: Generalizzare
-                                    .collection("Dispensa")
-                                    .snapshots();
-                                order = Order.byDefault;
-                              }
-                            },
+                    child: SizedBox(
+                      height: 50,
+                      width: 350,
+                      child: TextField(
+                        onChanged: (value) {
+                          filterSearchResults(value);
+                        },
+                        controller: editingController,
+                        decoration: const InputDecoration(
+                          labelText: 'Search',
+                          hintText: 'Search',
+                          prefixIcon: Icon(Icons.search,
+                              color: Color(utils.primaryColor)),
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.0)),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 140,
-                        child: ElevatedButton.icon(
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: 140,
+                          child: ElevatedButton.icon(
                             style: TextButton.styleFrom(
                               backgroundColor: const Color(utils.primaryColor),
                               shape: const RoundedRectangleBorder(
@@ -211,53 +177,91 @@ class _StoragePageState extends State<StoragePage> {
                                       BorderRadius.all(Radius.circular(50))),
                             ),
                             icon: const Icon(Icons.abc),
-                            label: const Text('Scadenza'),
-                            onPressed: () => setState(() {
-                                  if (order == Order.byDefault ||
-                                      order == Order.byName) {
-                                    _storageRef = FirebaseFirestore.instance
-                                        .collection("Storages")
-                                        .doc(globals.userCredential
-                                            ?.storageID) //TODO: Generalizzare
-                                        .collection("Dispensa")
-                                        .orderBy("Scadenza")
-                                        .snapshots();
-                                    order = Order.byDate;
-                                  } else {
-                                    _storageRef = FirebaseFirestore.instance
-                                        .collection("Storages")
-                                        .doc(globals.userCredential
-                                            ?.storageID) //TODO: Generalizzare
-                                        .collection("Dispensa")
-                                        .snapshots();
-                                    order = Order.byDefault;
-                                  }
-                                })),
-                      )
-                    ]),
-                SizedBox(
-                  height: 500, //TODO: Se ho un altro schermo?
-                  child: ListView.builder(
-                      padding: const EdgeInsets.all(10),
-                      itemExtent: 50.0,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        return Dismissible(
-                            key: UniqueKey(),
-                            onDismissed: (direction) {
-                              FirebaseFirestore.instance
-                                  .collection("Storages")
-                                  .doc(globals.userCredential?.storageID)
-                                  .collection("Dispensa")
-                                  .doc(snapshot.data!.docs[index].id)
-                                  .delete();
-                            },
-                            background: Container(color: Colors.red),
-                            child: _buildListItem(
-                                context, snapshot.data!.docs[index]));
-                      }),
-                ),
-              ],
+                            label: const Text('Nome'),
+                            onPressed: () => setState(
+                              () {
+                                if (order == Order.byDefault ||
+                                    order == Order.byDate) {
+                                  _storageRef = FirebaseFirestore.instance
+                                      .collection("Storages")
+                                      .doc(globals.userCredential
+                                          ?.storageID) //TODO: Generalizzare
+                                      .collection("Dispensa")
+                                      .orderBy("Nome")
+                                      .snapshots();
+                                  order = Order.byName;
+                                } else {
+                                  _storageRef = FirebaseFirestore.instance
+                                      .collection("Storages")
+                                      .doc(globals.userCredential
+                                          ?.storageID) //TODO: Generalizzare
+                                      .collection("Dispensa")
+                                      .snapshots();
+                                  order = Order.byDefault;
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 140,
+                          child: ElevatedButton.icon(
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color(utils.primaryColor),
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50))),
+                              ),
+                              icon: const Icon(Icons.abc),
+                              label: const Text('Scadenza'),
+                              onPressed: () => setState(() {
+                                    if (order == Order.byDefault ||
+                                        order == Order.byName) {
+                                      _storageRef = FirebaseFirestore.instance
+                                          .collection("Storages")
+                                          .doc(globals.userCredential
+                                              ?.storageID) //TODO: Generalizzare
+                                          .collection("Dispensa")
+                                          .orderBy("Scadenza")
+                                          .snapshots();
+                                      order = Order.byDate;
+                                    } else {
+                                      _storageRef = FirebaseFirestore.instance
+                                          .collection("Storages")
+                                          .doc(globals.userCredential
+                                              ?.storageID) //TODO: Generalizzare
+                                          .collection("Dispensa")
+                                          .snapshots();
+                                      order = Order.byDefault;
+                                    }
+                                  })),
+                        )
+                      ]),
+                  SizedBox(
+                    height: 500, //TODO: Se ho un altro schermo?
+                    child: ListView.builder(
+                        padding: const EdgeInsets.all(10),
+                        itemExtent: 50.0,
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          return Dismissible(
+                              key: UniqueKey(),
+                              onDismissed: (direction) {
+                                FirebaseFirestore.instance
+                                    .collection("Storages")
+                                    .doc(globals.userCredential?.storageID)
+                                    .collection("Dispensa")
+                                    .doc(snapshot.data!.docs[index].id)
+                                    .delete();
+                              },
+                              background: Container(color: Colors.red),
+                              child: _buildListItem(
+                                  context, snapshot.data!.docs[index]));
+                        }),
+                  ),
+                ],
+              ),
             ));
           } else {
             return Center(
@@ -377,93 +381,96 @@ class _NewProductPageState extends State<NewProductPage> {
         ),
         body: Center(
           child: Form(
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                Image.asset('assets/images/dispensa.png',
-                    width: 300, height: 300),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  width: 325,
-                  child: TextFormField(
-                    controller: productController,
-                    textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                        fillColor: Color.fromARGB(225, 177, 219, 213),
-                        filled: true,
-                        labelText: 'Inserisci il prodotto...',
-                        labelStyle: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.black),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value == null ? 'Inserire un prodotto' : null,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  Image.asset('assets/images/dispensa.png',
+                      width: 300, height: 300),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 50,
+                    width: 325,
+                    child: TextFormField(
+                      controller: productController,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                          fillColor: Color.fromARGB(225, 177, 219, 213),
+                          filled: true,
+                          labelText: 'Inserisci il prodotto...',
+                          labelStyle: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.black),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)))),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value == null ? 'Inserire un prodotto' : null,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  height: 50,
-                  width: 325,
-                  child: TextFormField(
-                    controller: dateInputController,
-                    textInputAction: TextInputAction.done,
-                    decoration: const InputDecoration(
-                        fillColor: Color.fromARGB(225, 177, 219, 213),
-                        filled: true,
-                        labelText: 'Inserisci la data di scadenza...',
-                        labelStyle: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.black),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value == null ? 'Inserire la data di scadenza' : null,
-                    readOnly: true,
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2020),
-                          lastDate: DateTime(2100));
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    height: 50,
+                    width: 325,
+                    child: TextFormField(
+                      controller: dateInputController,
+                      textInputAction: TextInputAction.done,
+                      decoration: const InputDecoration(
+                          fillColor: Color.fromARGB(225, 177, 219, 213),
+                          filled: true,
+                          labelText: 'Inserisci la data di scadenza...',
+                          labelStyle: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.black),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)))),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) =>
+                          value == null ? 'Inserire la data di scadenza' : null,
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2100));
 
-                      if (pickedDate != null) {
-                        setState(() {
-                          dateInputController.text = pickedDate.toString();
-                          // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
-                        });
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(height: 60),
-                SizedBox(
-                  height: 60,
-                  width: 300,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
-                      backgroundColor: const Color(utils.primaryColor),
-                    ),
-                    onPressed: sendProductToDb,
-                    child: const Text(
-                      'Inserisci prodotto',
-                      style: TextStyle(fontSize: 24),
+                        if (pickedDate != null) {
+                          setState(() {
+                            dateInputController.text = pickedDate.toString();
+                            // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
+                          });
+                        }
+                      },
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-              ],
+                  const SizedBox(height: 60),
+                  SizedBox(
+                    height: 60,
+                    width: 300,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        backgroundColor: const Color(utils.primaryColor),
+                      ),
+                      onPressed: sendProductToDb,
+                      child: const Text(
+                        'Inserisci prodotto',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
@@ -574,90 +581,94 @@ class _ModifyProductPageState extends State<ModifyProductPage> {
       ),
       body: Center(
         child: Form(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              Image.asset('assets/images/dispensa.png',
-                  width: 300, height: 300),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                  controller: productController,
-                  textInputAction: TextInputAction.next,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: const InputDecoration(
-                      fillColor: Color.fromARGB(225, 177, 219, 213),
-                      filled: true,
-                      labelText: 'Inserisci il prodotto...',
-                      labelStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
-                  validator: (value) =>
-                      value == null ? 'Inserire un prodotto' : null,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Image.asset('assets/images/dispensa.png',
+                    width: 300, height: 300),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 50,
+                  width: 325,
+                  child: TextFormField(
+                    controller: productController,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: const InputDecoration(
+                        fillColor: Color.fromARGB(225, 177, 219, 213),
+                        filled: true,
+                        labelText: 'Inserisci il prodotto...',
+                        labelStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50)))),
+                    validator: (value) =>
+                        value == null ? 'Inserire un prodotto' : null,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                  controller: dateInputController,
-                  textInputAction: TextInputAction.done,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: const InputDecoration(
-                      fillColor: Color.fromARGB(225, 177, 219, 213),
-                      filled: true,
-                      labelText: 'Inserisci il prodotto...',
-                      labelStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
-                  validator: (value) =>
-                      value == null ? 'Inserire la data di scadenza' : null,
-                  readOnly: true,
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100));
+                const SizedBox(height: 30),
+                SizedBox(
+                  height: 50,
+                  width: 325,
+                  child: TextFormField(
+                    controller: dateInputController,
+                    textInputAction: TextInputAction.done,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: const InputDecoration(
+                        fillColor: Color.fromARGB(225, 177, 219, 213),
+                        filled: true,
+                        labelText: 'Inserisci il prodotto...',
+                        labelStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50)))),
+                    validator: (value) =>
+                        value == null ? 'Inserire la data di scadenza' : null,
+                    readOnly: true,
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100));
 
-                    if (pickedDate != null) {
-                      setState(() {
-                        dateInputController.text = pickedDate.toString();
-                        // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
-                      });
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 60),
-              SizedBox(
-                height: 60,
-                width: 300,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    backgroundColor: const Color(utils.primaryColor),
-                  ),
-                  onPressed: sendProductToDb,
-                  child: const Text(
-                    'Salva le modifiche',
-                    style: TextStyle(fontSize: 24),
+                      if (pickedDate != null) {
+                        setState(() {
+                          dateInputController.text = pickedDate.toString();
+                          // DateFormat.yMd().format(pickedDate); //TODO: RIVEDERE
+                        });
+                      }
+                    },
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 60),
+                SizedBox(
+                  height: 60,
+                  width: 300,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      backgroundColor: const Color(utils.primaryColor),
+                    ),
+                    onPressed: sendProductToDb,
+                    child: const Text(
+                      'Salva le modifiche',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
