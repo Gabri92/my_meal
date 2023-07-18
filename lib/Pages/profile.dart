@@ -32,28 +32,66 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 50),
-              Text(
-                user?["username"],
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Colors.black),
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          if (constraints.maxHeight > 700) {
+            return _buildNormalApp();
+          } else {
+            return _buildSmallerApp();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildNormalApp() {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
+            Text(
+              user?["username"],
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.black),
+            ),
+            Text(
+              user?["email"],
+              style: const TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                  decoration: TextDecoration.underline,
+                  color: Colors.black),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              height: 60,
+              width: 350,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
+                ),
+                child: const Text(
+                  'Reset password',
+                  style: TextStyle(fontSize: 24),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ForgotPasswordPage(),
+                    ),
+                  );
+                },
               ),
-              Text(
-                user?["email"],
-                style: const TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 16,
-                    decoration: TextDecoration.underline,
-                    color: Colors.black),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: false,
+              child: SizedBox(
                 height: 60,
                 width: 350,
                 child: ElevatedButton(
@@ -63,82 +101,168 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: const Color(utils.primaryColor),
                   ),
                   child: const Text(
-                    'Reset password',
+                    'Privacy Policy',
                     style: TextStyle(fontSize: 24),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const ForgotPasswordPage(),
+                  onPressed: () => _launchPrivacyUrl,
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: false,
+              child: SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  child: const Text(
+                    'Notifiche',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: false,
+              child: SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  child: const Text(
+                    'App Tutorial',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              height: 60,
+              width: 350,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
+                ),
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 24),
+                ),
+                onPressed: () => FirebaseAuth.instance.signOut(),
+              ),
+            ),
+            const SizedBox(height: 100),
+            SizedBox(
+              height: 60,
+              width: 350,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text(
+                  'Elimina account',
+                  style: TextStyle(fontSize: 24),
+                ),
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    scrollable: false,
+                    content: const Text(
+                        'Sei sicuro di voler cancellare il tuo account?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                        child: const Text('Torna al profilo'),
                       ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 30),
-              Visibility(
-                visible: false,
-                child: SizedBox(
-                  height: 60,
-                  width: 350,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
-                      backgroundColor: const Color(utils.primaryColor),
-                    ),
-                    child: const Text(
-                      'Privacy Policy',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    onPressed: () => _launchPrivacyUrl,
+                      TextButton(
+                        style:
+                            TextButton.styleFrom(backgroundColor: Colors.red),
+                        onPressed: () {
+                          _deleteAccount();
+                          Navigator.pop(context, 'Elimina account');
+                        },
+                        child: const Text(
+                          'Elimina account',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
-              Visibility(
-                visible: false,
-                child: SizedBox(
-                  height: 60,
-                  width: 350,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
-                      backgroundColor: const Color(utils.primaryColor),
-                    ),
-                    child: const Text(
-                      'Notifiche',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    onPressed: () {},
-                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSmallerApp() {
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
+            Text(
+              user?["username"],
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.black),
+            ),
+            Text(
+              user?["email"],
+              style: const TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                  decoration: TextDecoration.underline,
+                  color: Colors.black),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              height: 50,
+              width: 320,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
                 ),
-              ),
-              const SizedBox(height: 30),
-              Visibility(
-                visible: false,
-                child: SizedBox(
-                  height: 60,
-                  width: 350,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
-                      backgroundColor: const Color(utils.primaryColor),
-                    ),
-                    child: const Text(
-                      'App Tutorial',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    onPressed: () {},
-                  ),
+                child: const Text(
+                  'Reset password',
+                  style: TextStyle(fontSize: 24),
                 ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ForgotPasswordPage(),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 30),
-              SizedBox(
-                height: 60,
-                width: 350,
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: false,
+              child: SizedBox(
+                height: 50,
+                width: 320,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: const RoundedRectangleBorder(
@@ -146,56 +270,113 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: const Color(utils.primaryColor),
                   ),
                   child: const Text(
-                    'Logout',
+                    'Privacy Policy',
                     style: TextStyle(fontSize: 24),
                   ),
-                  onPressed: () => FirebaseAuth.instance.signOut(),
+                  onPressed: () => _launchPrivacyUrl,
                 ),
               ),
-              const SizedBox(height: 100),
-              SizedBox(
-                height: 60,
-                width: 350,
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: false,
+              child: SizedBox(
+                height: 50,
+                width: 320,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(50))),
-                    backgroundColor: Colors.red,
+                    backgroundColor: const Color(utils.primaryColor),
                   ),
                   child: const Text(
-                    'Elimina account',
+                    'Notifiche',
                     style: TextStyle(fontSize: 24),
                   ),
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      scrollable: false,
-                      content: const Text(
-                          'Sei sicuro di voler cancellare il tuo account?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'Cancel'),
-                          child: const Text('Torna al profilo'),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: false,
+              child: SizedBox(
+                height: 50,
+                width: 320,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                    backgroundColor: const Color(utils.primaryColor),
+                  ),
+                  child: const Text(
+                    'App Tutorial',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              height: 50,
+              width: 320,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
+                ),
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 24),
+                ),
+                onPressed: () => FirebaseAuth.instance.signOut(),
+              ),
+            ),
+            const SizedBox(height: 100),
+            SizedBox(
+              height: 50,
+              width: 320,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text(
+                  'Elimina account',
+                  style: TextStyle(fontSize: 24),
+                ),
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    scrollable: false,
+                    content: const Text(
+                        'Sei sicuro di voler cancellare il tuo account?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                        child: const Text('Torna al profilo'),
+                      ),
+                      TextButton(
+                        style:
+                            TextButton.styleFrom(backgroundColor: Colors.red),
+                        onPressed: () {
+                          _deleteAccount();
+                          Navigator.pop(context, 'Elimina account');
+                        },
+                        child: const Text(
+                          'Elimina account',
+                          style: TextStyle(color: Colors.white),
                         ),
-                        TextButton(
-                          style:
-                              TextButton.styleFrom(backgroundColor: Colors.red),
-                          onPressed: () {
-                            _deleteAccount();
-                            Navigator.pop(context, 'Elimina account');
-                          },
-                          child: const Text(
-                            'Elimina account',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

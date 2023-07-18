@@ -108,157 +108,321 @@ class _SignUpWidgetState extends State<SignUpWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 80),
-              const Text('Benvenuto/a!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 40),
-              const Text('Iniziamo a gestire la tua dispensa',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300)),
-              const SizedBox(height: 80),
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                  controller: emailController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                      fillColor: Color.fromARGB(225, 177, 219, 213),
-                      filled: true,
-                      labelText: 'La tua email',
-                      labelStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (email) =>
-                      email != null && !EmailValidator.validate(email)
-                          ? 'Inserisci una email valida'
-                          : null,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                  controller: userNameController,
-                  decoration: const InputDecoration(
-                      fillColor: Color.fromARGB(225, 177, 219, 213),
-                      filled: true,
-                      labelText: 'Username',
-                      labelStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
-                  textInputAction: TextInputAction.next,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) => value != null && value.length < 4
-                      ? 'Inserisci almeno 4 caratteri'
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                    controller: passwordController,
-                    decoration: const InputDecoration(
-                        fillColor: Color.fromARGB(225, 177, 219, 213),
-                        filled: true,
-                        labelText: 'Password',
-                        labelStyle: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
-                    textInputAction: TextInputAction.next,
-                    obscureText: true,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) => value != null && value.length < 6
-                        ? 'Enter min. 6 characters'
-                        : null),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 50,
-                width: 325,
-                child: TextFormField(
-                    controller: passwordConfirmController,
-                    decoration: const InputDecoration(
-                        fillColor: Color.fromARGB(225, 177, 219, 213),
-                        filled: true,
-                        labelText: 'Conferma la password',
-                        labelStyle: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
-                    textInputAction: TextInputAction.done,
-                    obscureText: true,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                        value != null && value != passwordController.text.trim()
-                            ? 'La password è diversa da quella inserita'
-                            : null),
-              ),
-              const SizedBox(height: 50),
-              SizedBox(
-                height: 60,
-                width: 300,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    backgroundColor: const Color(utils.primaryColor),
-                  ),
-                  onPressed: signUp,
-                  child: const Text(
-                    'Registrati',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              RichText(
-                  text: TextSpan(
-                style: const TextStyle(color: Colors.black, fontSize: 20),
-                text: 'Hai già un account? ',
-                children: [
-                  TextSpan(
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = widget.onClickedSignIn,
-                    text: 'Accedi',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
-              )),
-            ],
-          ),
-        ),
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          if (constraints.maxHeight > 700) {
+            return _buildNormalSignupPage();
+          } else {
+            return _buildSmallerSignupPage();
+          }
+        },
       );
+
+  Widget _buildNormalSignupPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 80),
+            const Text('Benvenuto/a!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 40),
+            const Text('Iniziamo a gestire la tua dispensa',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300)),
+            const SizedBox(height: 80),
+            SizedBox(
+              height: 50,
+              width: 325,
+              child: TextFormField(
+                controller: emailController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                    fillColor: Color.fromARGB(225, 177, 219, 213),
+                    filled: true,
+                    labelText: 'La tua email',
+                    labelStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(50)))),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (email) =>
+                    email != null && !EmailValidator.validate(email)
+                        ? 'Inserisci una email valida'
+                        : null,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 50,
+              width: 325,
+              child: TextFormField(
+                controller: userNameController,
+                decoration: const InputDecoration(
+                    fillColor: Color.fromARGB(225, 177, 219, 213),
+                    filled: true,
+                    labelText: 'Username',
+                    labelStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(50)))),
+                textInputAction: TextInputAction.next,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) => value != null && value.length < 4
+                    ? 'Inserisci almeno 4 caratteri'
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 50,
+              width: 325,
+              child: TextFormField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'Password',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  textInputAction: TextInputAction.next,
+                  obscureText: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => value != null && value.length < 6
+                      ? 'Enter min. 6 characters'
+                      : null),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 50,
+              width: 325,
+              child: TextFormField(
+                  controller: passwordConfirmController,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'Conferma la password',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  textInputAction: TextInputAction.done,
+                  obscureText: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) =>
+                      value != null && value != passwordController.text.trim()
+                          ? 'La password è diversa da quella inserita'
+                          : null),
+            ),
+            const SizedBox(height: 50),
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
+                ),
+                onPressed: signUp,
+                child: const Text(
+                  'Registrati',
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            RichText(
+                text: TextSpan(
+              style: const TextStyle(color: Colors.black, fontSize: 20),
+              text: 'Hai già un account? ',
+              children: [
+                TextSpan(
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = widget.onClickedSignIn,
+                  text: 'Accedi',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSmallerSignupPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 60),
+            const Text('Benvenuto/a!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            const Text('Iniziamo a gestire la tua dispensa',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300)),
+            const SizedBox(height: 60),
+            SizedBox(
+              height: 45,
+              width: 320,
+              child: TextFormField(
+                controller: emailController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                    fillColor: Color.fromARGB(225, 177, 219, 213),
+                    filled: true,
+                    labelText: 'La tua email',
+                    labelStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(50)))),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (email) =>
+                    email != null && !EmailValidator.validate(email)
+                        ? 'Inserisci una email valida'
+                        : null,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 45,
+              width: 320,
+              child: TextFormField(
+                controller: userNameController,
+                decoration: const InputDecoration(
+                    fillColor: Color.fromARGB(225, 177, 219, 213),
+                    filled: true,
+                    labelText: 'Username',
+                    labelStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(50)))),
+                textInputAction: TextInputAction.next,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) => value != null && value.length < 4
+                    ? 'Inserisci almeno 4 caratteri'
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 45,
+              width: 320,
+              child: TextFormField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'Password',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  textInputAction: TextInputAction.next,
+                  obscureText: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => value != null && value.length < 6
+                      ? 'Enter min. 6 characters'
+                      : null),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 45,
+              width: 320,
+              child: TextFormField(
+                  controller: passwordConfirmController,
+                  decoration: const InputDecoration(
+                      fillColor: Color.fromARGB(225, 177, 219, 213),
+                      filled: true,
+                      labelText: 'Conferma la password',
+                      labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  textInputAction: TextInputAction.done,
+                  obscureText: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) =>
+                      value != null && value != passwordController.text.trim()
+                          ? 'La password è diversa da quella inserita'
+                          : null),
+            ),
+            const SizedBox(height: 50),
+            SizedBox(
+              height: 50,
+              width: 280,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  backgroundColor: const Color(utils.primaryColor),
+                ),
+                onPressed: signUp,
+                child: const Text(
+                  'Registrati',
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            RichText(
+                text: TextSpan(
+              style: const TextStyle(color: Colors.black, fontSize: 18),
+              text: 'Hai già un account? ',
+              children: [
+                TextSpan(
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = widget.onClickedSignIn,
+                  text: 'Accedi',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            )),
+          ],
+        ),
+      ),
+    );
+  }
 }
