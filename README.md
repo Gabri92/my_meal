@@ -29,7 +29,7 @@ This project was part of a broader initiative to validate and solve a real-world
 
 - **Flutter** – Cross-platform mobile framework
 - **Dart** – Language used for Flutter development
-- **Firebase (Planned)** – For authentication and backend
+- **Firebase** – For authentication and backend
 - **Figma** – For UI/UX prototyping
 
 ---
@@ -73,7 +73,6 @@ main.dart        # App entry point
 ## 🧱 MVP Limitations
 
 This was an MVP prototype built for validation:
-- No production backend (Firebase planned but not integrated)
 - Simple navigation and hardcoded data
 - Design focused on UX demonstration, not scale
 
@@ -94,7 +93,6 @@ This project is open-source for educational purposes. Feel free to fork, learn, 
 
 ## 📌 Roadmap (Ideas for Future)
 
-- Full Firebase backend (auth, Firestore)
 - Barcode/visual scanner for food input
 - AI-based recipe generator
 - In-app community features
